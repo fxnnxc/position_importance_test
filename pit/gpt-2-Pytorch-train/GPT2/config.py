@@ -8,9 +8,9 @@
 def get_config(model_name='117M'):
     config = None
 
-    if model_name == '117M':
-        config = GPT2_117M_Config()
-    elif model_name == '345M':
+
+    config = GPT2_117M_Config()
+    if model_name == '345M':
         config = GPT2_345M_Config()
 
     return config

@@ -32,25 +32,37 @@ def load_dataset(enc, path, combine):
     for path in tqdm.tqdm(paths):
 
         if path.endswith('.npz'):
-
+            print("\n1\n")
             # Pre-encoded
             with np.load(path) as npz:
                 for item in npz.files:
                     token_chunks.append(npz[item])
         else:
-
+            print("\n2\n")
             # Plain text
-            with open(path, mode='r', encoding='utf-8') as fp:
-                raw_text += fp.read()
 
-            if len(raw_text) >= combine:
-                tokens = np.stack(enc.encode(raw_text))
+            result_list = []
+            with open(path, mode='r') as fp:
+                for line in fp:
+                    numbers = line.strip().split()
+                    numbers = [int(num) for num in numbers]
+
+                    result_list.extend(numbers)
+                    result_list.append(198)
+                # raw_text += fp.read()
+
+            if len(result_list) >= combine:
+
+                tokens = np.array(result_list)
+                for i in range(20):
+                    print(tokens[i])
                 token_chunks.append(tokens)
                 raw_text = ''
             else:
                 raw_text += '<|endoftext|>'
 
     if raw_text:
+        print("\n3\n")
         tokens = np.stack(enc.encode(raw_text))
         token_chunks.append(tokens)
 
