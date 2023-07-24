@@ -131,31 +131,32 @@ def main():
         exit('Bad optimizer:', args.optimizer)
 
     # load model
-    if args.restore_from == 'latest':
-        ckpt_path = get_latest_ckpt(os.path.join(CHECKPOINT_DIR, args.run_name))
+    # if args.restore_from == 'latest':
+    #     ckpt_path = get_latest_ckpt(os.path.join(CHECKPOINT_DIR, args.run_name))
 
-        if ckpt_path is None:
-            state_dict = get_state_dict(args.model_name)
-            model = load_model(model, state_dict, device)
-            counter = 1
+    #     if ckpt_path is None:
+    #         state_dict = get_state_dict(args.model_name)
+    #         model = load_model(model, state_dict, device)
+    #         counter = 1
 
-        else:
-            ckpt = torch.load(ckpt_path)
-            model = load_model(model, ckpt['model_state_dict'], device)
-            optimizer.load_state_dict(ckpt['optimizer_state_dict'])
-            counter = ckpt['counter']
+    #     else:
+    #         ckpt = torch.load(ckpt_path)
+    #         model = load_model(model, ckpt['model_state_dict'], device)
+    #         optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+    #         counter = ckpt['counter']
 
-    elif args.restore_from == 'fresh':
-        state_dict = get_state_dict(args.model_name)
-        model = load_model(model, state_dict, device)
-        counter = 1
+    # elif args.restore_from == 'fresh':
+    #     state_dict = get_state_dict(args.model_name)
+    #     model = load_model(model, state_dict, device)
+    #     counter = 1
 
-    else:  # path to a checkpoint tar file
-        ckpt = torch.load(args.restore_from)
-        model = load_model(model, ckpt['model_state_dict'], device)
-        optimizer.load_state_dict(ckpt['optimizer_state_dict'])
-        counter = ckpt['counter']
+    # else:  # path to a checkpoint tar file
+    #     ckpt = torch.load(args.restore_from)
+    #     model = load_model(model, ckpt['model_state_dict'], device)
+    #     optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+    #     counter = ckpt['counter']
 
+    counter = 1
     # load datasets
     print('load training dataset...')
     chunks = load_dataset(enc, args.dataset, args.combine)
