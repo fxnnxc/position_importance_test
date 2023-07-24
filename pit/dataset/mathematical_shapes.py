@@ -90,9 +90,11 @@ class MathematicalShapesDataset(BaseShapesDataset):
         for a in range(100):
             for b in range(100):
                 if self.train:
-                    pass 
-                else:
-                    pass 
+                    if (not (a>b)) or ((a+b)==100):
+                        continue
+                else: #test
+                    if not ((a+b)==100):
+                        continue
                 inputs = (a,b)
                         
                 sequence = self.rules[0].make_sample(None, inputs=inputs) 
@@ -101,9 +103,11 @@ class MathematicalShapesDataset(BaseShapesDataset):
         for a in range(100):
             for b in range(100):
                 if self.train:
-                    pass 
+                    if ((abs(a)+abs(b))==100):
+                        continue 
                 else:
-                    pass 
+                    if not ((abs(a)+abs(b))==100):
+                        continue 
                 inputs = (a,b)
                 sequence = self.rules[1].make_sample(None, inputs=inputs)
                 self.data.append(sequence)
@@ -138,10 +142,11 @@ class Rule0(BaseRule):
 
     def make_sample(self, i:int, inputs=None):
         sample = torch.zeros(self.max_seq_len, 3).fill_(self.eos_token)
-        a = np.random.randint(1, self.num_shapes-1)
-        b = np.random.randint(1, self.num_shapes - a)
+        # a = np.random.randint(1, self.num_shapes-1)
+        # b = np.random.randint(1, self.num_shapes - a)
+        a,b = inputs
         c = a+b
-        assert c < self.num_shapes        
+        # assert c < self.num_shapes        
         sample[1, 0] = a 
         sample[2, 0] = self.add_token
         sample[3, 0] = b
@@ -177,10 +182,10 @@ class Rule4(BaseRule):
 
     def make_sample(self, i:int, inputs=None):
         sample = torch.zeros(self.max_seq_len, 3).fill_(self.eos_token)
-        a = np.random.randint(1, self.num_shapes)
-        b = np.random.randint(1, self.num_shapes)
+        # a = np.random.randint(1, self.num_shapes)
+        # b = np.random.randint(1, self.num_shapes)
+        a,b = inputs
         c = a-b
-
         sample[1, 0] = a 
         sample[2, 0] = self.subtract_token
         sample[3, 0] = b
