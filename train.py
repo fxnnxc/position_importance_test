@@ -53,7 +53,7 @@ save_every = 10
 date = datetime.today()            # 현재 날짜 가져오기
 
 save_dir = os.path.join('outputs/', f'{datetime.today().month}_{datetime.today().day}')
-log_dir = "outputs/log_dir"
+log_dir = f"outputs/log_dir/{datetime.today().month}_{datetime.today().day}"
 writer = SummaryWriter(log_dir)
 
 # dataset 

@@ -36,13 +36,13 @@ class BaseShapesDataset:
         self.return_rule_label = return_rule_label
 
         if self.is_one_hot_color and self.is_one_hot_texture:
-            self.vocab_len = self.num_shapes * self.num_colors * self.num_textures
+            self.vocab_len = self.num_shapes * self.num_colors * self.num_textures + 1
         elif self.is_one_hot_color:
-            self.vocab_len = self.num_shapes * self.num_colors 
+            self.vocab_len = self.num_shapes * self.num_colors + 1
         elif self.is_one_hot_texture:
-            self.vocab_len = self.num_shapes * self.num_textures
+            self.vocab_len = self.num_shapes * self.num_textures + 1
         else:
-            self.vocab_len = self.num_shapes
+            self.vocab_len = self.num_shapes + 1
 
     def __getitem__(self, idx:int):
         x, y = self.data[idx]
