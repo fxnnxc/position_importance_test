@@ -63,7 +63,7 @@ def main():
     parser = argparse.ArgumentParser(description='Fine-tune GPT-2 on your custom dataset.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--dataset', metavar='PATH', type=str, required=True,
+    parser.add_argument('--dataset', metavar='PATH', type=str, default= '/root/code/team/position_importance_test/pit/dh_test/isolated_dataset.txt',#required=True,
                         help='Input file, directory, or glob pattern (utf-8 text, or preencoded .npz files).')
     parser.add_argument('--model_name', metavar='MODEL', type=str, default='117M', help='Pretrained model name')
     parser.add_argument('--combine', metavar='CHARS', type=int, default=50000,
