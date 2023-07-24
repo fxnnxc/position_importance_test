@@ -52,7 +52,7 @@ class MathematicalShapesDataset(BaseShapesDataset):
         self.multiply_token  = self.shape_vocab_len + 3
         self.subtract_token  = self.shape_vocab_len + 4
         self.divide_token    = self.shape_vocab_len + 5
-        self.negative_token  = self.shape_vocab_len + 5
+        self.negative_token  = self.shape_vocab_len + 6
         self.eos_token = self.vocab_len - 1
 
 
@@ -81,6 +81,8 @@ class MathematicalShapesDataset(BaseShapesDataset):
 
     def __getitem__(self, idx):
         input_ids = self.data[idx][:,0].long()
+        max_id = (input_ids).max()
+        assert max_id < self.vocab_len, max_id
         return {"input_ids":input_ids}
 
     def _make_data(self):
@@ -88,7 +90,7 @@ class MathematicalShapesDataset(BaseShapesDataset):
         self.data = []
         # Rule 0 
         for a in range(100):
-            for b in range(100-b):
+            for b in range(101-a):
                 if self.train:
                     if (not (a>b)) or ((a+b)==100):
                         continue
