@@ -191,13 +191,18 @@ def main():
         for _ in range(args.sample_num):
             out = sample_sequence(
                 model=model, length=args.sample_length, context=None,
-                start_token=enc.encoder['<|endoftext|>'], batch_size=1,
+                # start_token=14454, 
+                start_token=109, 
+                batch_size=1,
+                # start_token=enc.encoder['109'], batch_size=1,
                 temperature=1.0, top_k=args.top_k, device=device
             )
-
+            # print(enc.encoder['<|endoftext|>'])
+            # print(enc.encoder['<|endoftext|>'].type())
             out = out[:, :].tolist()[0]
             generated += 1
-            text = enc.decode(out)
+            # text = enc.decode(out)
+            text = str(out)
             print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
             print(text)
             all_text.append(text)
