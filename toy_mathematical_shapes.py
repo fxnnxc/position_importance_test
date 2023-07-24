@@ -13,7 +13,7 @@ def process_matrix_and_save_as_csv(matrix, output_file_train, output_file_test, 
         vector.append(element)
     if (vector[2]==(num_shapes+2) and (vector[1]+vector[3]==100) and vector[1]>vector[3] and vector[3]<51): #rule 0
         save_vector_as_csv(vector, output_file_test)
-    if (vector[4]==101 and (vector[1]+vector[3]==100) and vector[1]>vector[3]):
+    if (vector[4]==(num_shapes+4) and (vector[1]-vector[3]==50 or vector[1]-vector[3]==-50) and vector[1]<100): #rule 4
         save_vector_as_csv(vector, output_file_test)
     save_vector_as_csv(vector, output_file_train)
     print(f"vector: {vector}")
@@ -21,7 +21,7 @@ num_shapes=102
 dataset = MathematicalShapesDataset(
                                       rule_indices=[0], 
                                       num_shapes=num_shapes,
-                                      num_samples=10000, 
+                                      num_samples=1000000, 
                                       return_rule_label=True)
 c_y = 0
 # for d in dataset:
