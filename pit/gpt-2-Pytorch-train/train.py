@@ -106,7 +106,7 @@ def main():
     enc = get_encoder()
     config = get_config(args.model_name)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = GPT2LMHeadModel(config)
+    model = GPT2LMHeadModel(config).to(device)
 
     # error checking
     if args.sample_length > config.n_ctx:
