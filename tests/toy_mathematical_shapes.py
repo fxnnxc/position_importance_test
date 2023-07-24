@@ -3,8 +3,8 @@ from pit.dataset.mathematical_shapes import MathematicalShapesDataset
 
 
 dataset = MathematicalShapesDataset(
-                                      rule_indices=[0,1,2,3,4,5,6,7], 
-                                      num_shapes=20,
+                                      rule_indices=[0, 4], 
+                                      num_shapes=10,
                                       num_samples=100, 
                                       return_rule_label=True)
 c_y = 0
