@@ -1,5 +1,5 @@
 import os
-import tqdm.tqdm as tqdm
+from tqdm import tqdm
 import time
 import argparse
 import torch    
@@ -57,19 +57,18 @@ log_dir = "outputs/log_dir"
 writer = SummaryWriter(log_dir)
 
 # dataset 
-num_shapes=102
+num_shapes=101
 train_dataset = MathematicalShapesDataset( # sum to not 100
                                     train=True,
                                     rule_indices=[0,4], 
                                     num_shapes=num_shapes,
-                                    num_samples=1000000, 
                                     return_rule_label=True)
 
 test_dataset = MathematicalShapesDataset(  # sum to 100
                                     train=False,
                                     rule_indices=[0,4], 
                                     num_shapes=num_shapes,
-                                    num_samples=1000000, 
+                                    num_samples=10000, 
                                     return_rule_label=True)
 
 # load model
@@ -84,15 +83,24 @@ optimizer = torch.optim.Adam(all_vars, lr=learning_rate)
 optimizer.zero_grad()
 
 # train
-for i in epoch:
+
+# if not os.path.exists(save_dir):
+#     os.makedirs(save_dir)
+
+# with open(os.path.join(SAMPLE_DIR, args.run_name, 'samples-{}.txt'.format(counter)), 'w') as fp:
+        
+for i in range(epoch):
     pbar = tqdm(range(len(train_dataset)))
-    pbar.set_description(f" train - epoch {i}")
+    pbar.set_description(f" train - epoch {i+1}")
     avg = 0
     for idx in pbar:
         data = train_dataset[idx]
         data['input_ids'] = data['input_ids'].to(device)
         data['labels'] = data['input_ids'].to(device)
+        # if idx > 1560:
+        #     print(data)
         output = model(**data)
+        
         loss = output.loss
         loss.backward()
         optimizer.step()
@@ -101,23 +109,27 @@ for i in epoch:
         avg = avg / (idx + 1)
         
         # writer.add_scalar('Loss/Train',loss,epoch*len(train_dataset) + idx)        
-        pbar.set_postfix(avg_loss = avg)
+        # pbar.set_postfix(avg_loss = avg.item())
     writer.add_scalar('Loss/Train',avg,i)
     if not(i % save_every) or (i == epoch - 1):
-        save(model, save_dir, f'{i}_avg')
+        save(model, save_dir, f'{i}')
     
     # evaluation
     model.eval()
     optimizer.zero_grad()
     print("Test for 5 random samples")
     for _ in range(5):
+        index = np.random.randint(len(test_dataset))
+        i = test_dataset[index]
         i['input_ids'] = i['input_ids'].to(device)
         print(i) 
-        output = model.generate(i['input_ids'][:,:5], max_new_tokens=3, min_new_tokens=3)
+        output = model.generate(i['input_ids'][:5].unsqueeze(0), max_new_tokens=3, min_new_tokens=3)
         print(output) 
-        break
+            # fp.write('\n'.join(all_text))
+        
 
     model.train()
+    optimizer.zero_grad()
 
     
 

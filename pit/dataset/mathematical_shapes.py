@@ -81,6 +81,8 @@ class MathematicalShapesDataset(BaseShapesDataset):
 
     def __getitem__(self, idx):
         input_ids = self.data[idx][:,0].long()
+        max_id = (input_ids).max()
+        assert max_id < self.vocab_len, max_id
         return {"input_ids":input_ids}
 
     def _make_data(self):
@@ -88,7 +90,7 @@ class MathematicalShapesDataset(BaseShapesDataset):
         self.data = []
         # Rule 0 
         for a in range(100):
-            for b in range(100):
+            for b in range(100-a):
                 if self.train:
                     if (not (a>b)) or ((a+b)==100):
                         continue
