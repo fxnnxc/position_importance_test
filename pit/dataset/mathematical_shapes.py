@@ -88,7 +88,7 @@ class MathematicalShapesDataset(BaseShapesDataset):
         self.data = []
         # Rule 0 
         for a in range(100):
-            for b in range(100):
+            for b in range(100-b):
                 if self.train:
                     if (not (a>b)) or ((a+b)==100):
                         continue
