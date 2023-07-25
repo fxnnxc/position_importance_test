@@ -10,6 +10,7 @@ from pit.dataset.mathematical_shapes import MathematicalShapesDataset
 from torch.utils.data import DataLoader
 from transformers import GPT2LMHeadModel, GPT2Config
 from torch.utils.tensorboard import SummaryWriter
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 #####################################
 # function
@@ -36,9 +37,9 @@ parser = argparse.ArgumentParser(description='Fine-tune GPT-2 on your custom dat
     
 parser.add_argument('--device', type=str, default='cuda:0')
 # parser.add_argument('--pos_name', type=str, default='sinusoidal')
-parser.add_argument('--optimizer', type=str, default='adam')
+parser.add_argument('--optimizer', type=str, default='sgd')
 
-parser.add_argument('--num-of-layers', type=int, default='2')
+# parser.add_argument('--num-of-layers', type=int, default='2')
                     
 
 
@@ -66,8 +67,8 @@ save_every = 100
 
 date = datetime.today()            # 현재 날짜 가져오기
 
-save_dir = os.path.join('outputs/pretrained/', f"{args.num_of_layers}_{args.optimizer}")
-log_dir = f"outputs/log_dir/{args.num_of_layers}_{args.optimizer}"
+save_dir = os.path.join('outputs/pretrained/', f"fine_{args.optimizer}")
+log_dir = f"outputs/log_dir/fine_{args.optimizer}"
 # save_dir = os.path.join('outputs/pretrained/', f'{datetime.today().month}_{datetime.today().day}')
 # log_dir = f"outputs/log_dir/{datetime.today().month}_{datetime.today().day}" ### change
 writer = SummaryWriter(log_dir)
@@ -88,8 +89,12 @@ test_dataset = MathematicalShapesDataset(  # sum to 100
                                     return_rule_label=True)
 
 # load model
-config=GPT2Config(n_layer=args.num_of_layers, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
-model = GPT2LMHeadModel(config=config).to(device)
+# config=GPT2Config(n_layer=12, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
+# model = GPT2LMHeadModel(config=config).to(device)
+config=GPT2Config(n_layer=12, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
+model = AutoModelForCausalLM.from_pretrained("gpt2", config=config, ignore_mismatched_sizes=True).to(device)
+
+
 
 # select variables to update while training
 all_vars = [tensor for tensor in model.parameters()]
@@ -130,7 +135,7 @@ for i in range(epoch):
         
     avg = total / (len(train_dataset)//batch_size)
     train_loss.append(avg.item())
-    writer.add_scalar(f'Loss/{args.num_of_layers}_{args.optimizer}/Train',avg,i)
+    writer.add_scalar(f'Loss/fine_{args.optimizer}/Train',avg,i)
     
     if not(i % save_every) or (i == epoch - 1):
         save(model, save_dir, f'{i}')
@@ -142,8 +147,8 @@ for i in range(epoch):
         save(model, save_dir, f'best')
         
         model.eval()
-        with open((f'outputs/results/{args.num_of_layers}_{args.optimizer}.txt'), 'a') as fp:        
-            fp.write(f"{args.num_of_layers}_{args.optimizer} \n")
+        with open((f'outputs/results/fine_{args.optimizer}.txt'), 'a') as fp:        
+            fp.write(f"fine_{args.optimizer} \n")
             fp.write(f'epoch - {i} \n')
             for idx, d in enumerate(test_dataset):
                 data = {}
@@ -200,7 +205,7 @@ for i in range(epoch):
 
 os.makedirs(f'outputs/loss', exist_ok=True)
 
-with open((f'outputs/loss/{args.num_of_layers}_{args.optimizer}.txt'), 'w') as fp:
+with open((f'outputs/loss/fine_{args.optimizer}.txt'), 'w') as fp:
     fp.write(f'{args.num_of_layers}_{args.optimizer}\n')
     fp.write(f'{train_loss}\n')
     fp.write(f'{avg}')    
