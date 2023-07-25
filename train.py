@@ -52,8 +52,8 @@ save_every = 10
 
 date = datetime.today()            # 현재 날짜 가져오기
 
-save_dir = os.path.join('outputs/', f'{datetime.today().month}_{datetime.today().day}')
-log_dir = f"outputs/log_dir/{datetime.today().month}_{datetime.today().day}"
+save_dir = os.path.join('outputs/pretrained/', f'{datetime.today().month}_{datetime.today().day}')
+log_dir = f"outputs/log_dir/{datetime.today().month}_{datetime.today().day}" ### change
 writer = SummaryWriter(log_dir)
 
 # dataset 
@@ -93,6 +93,7 @@ for i in range(epoch):
     pbar = tqdm(range(len(train_dataset)))
     pbar.set_description(f" train - epoch {i+1}")
     avg = 0
+
     for idx in pbar:
         data = train_dataset[idx]
         data['input_ids'] = data['input_ids'].to(device)
