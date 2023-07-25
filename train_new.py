@@ -36,11 +36,10 @@ parser = argparse.ArgumentParser(description='Fine-tune GPT-2 on your custom dat
     
 parser.add_argument('--device', type=str, default='cuda:0')
 # parser.add_argument('--pos_name', type=str, default='sinusoidal')
-parser.add_argument('--optimizer', type=str, default='adam')
+parser.add_argument('--optimizer', type=str, default='sgd')
 
 parser.add_argument('--num-of-layers', type=int, default='2')
                     
-
 
 args = parser.parse_args()
 print(args)
@@ -87,6 +86,7 @@ test_dataset = MathematicalShapesDataset(  # sum to 100
                                     num_samples=10000, 
                                     return_rule_label=True)
 
+# change number of positions
 # load model
 config=GPT2Config(n_layer=args.num_of_layers, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
 model = GPT2LMHeadModel(config=config).to(device)

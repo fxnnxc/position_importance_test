@@ -39,7 +39,7 @@ parser.add_argument('--device', type=str, default='cuda:0')
 # parser.add_argument('--pos_name', type=str, default='sinusoidal')
 parser.add_argument('--optimizer', type=str, default='sgd')
 
-# parser.add_argument('--num-of-layers', type=int, default='2')
+parser.add_argument('--num-of-layers', type=int, default='2')
                     
 
 
@@ -59,8 +59,8 @@ torch.cuda.manual_seed_all(seed)
 
 device=args.device
 
-learning_rate=0.00002
-batch_size = 128
+learning_rate=0.001
+batch_size = 32
 epoch = 1000
 save_every = 100
 
@@ -89,21 +89,21 @@ test_dataset = MathematicalShapesDataset(  # sum to 100
                                     return_rule_label=True)
 
 # load model
+config=GPT2Config(n_layer=args.num_of_layers, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
+model = GPT2LMHeadModel(config=config).to(device)
 # config=GPT2Config(n_layer=12, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
-# model = GPT2LMHeadModel(config=config).to(device)
-config=GPT2Config(n_layer=12, vocab_size=train_dataset.vocab_len, eos_token_id=train_dataset.eos_token)
-model = AutoModelForCausalLM.from_pretrained("gpt2", config=config, ignore_mismatched_sizes=True).to(device)
-
-
+# model = AutoModelForCausalLM.from_pretrained("gpt2", config=config, ignore_mismatched_sizes=True).to(device)
 
 # select variables to update while training
-all_vars = [tensor for tensor in model.parameters()]
+# all_vars = [tensor for tensor in model.parameters()]
 
 # create optimizer
 if args.optimizer == 'sgd':
-    optimizer = torch.optim.Adam(all_vars, lr=learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+if args.optimizer == 'adamw':
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 else:
-    optimizer = torch.optim.SGD(all_vars, lr=learning_rate)
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 optimizer.zero_grad()
 
 # train
@@ -129,6 +129,7 @@ for i in range(epoch):
         
         loss = output.loss
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
         optimizer.step()
         
         total += loss
