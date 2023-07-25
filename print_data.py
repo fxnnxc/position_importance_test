@@ -1,4 +1,5 @@
 from pit.dataset.mathematical_shapes import MathematicalShapesDataset
+from converter import converter
 import numpy as np
 import pandas as pd
 
@@ -38,10 +39,14 @@ print(f"number of testset samples : {test_dataset.num_samples}")
 
 for d in train_dataset:
     x = d['input_ids']
+    print("converted: ")
+    print(converter(train_dataset, x))
     matrix = np.array(x)  
     process_matrix_and_save_as_csv(matrix, output_file_train, output_file_test, num_shapes )
 for d in test_dataset:
     x = d['input_ids'] 
+    print("converted: ")
+    print(converter(train_dataset, x))
     matrix = np.array(x)  
     process_matrix_and_save_as_csv(matrix, output_file_test, output_file_test, num_shapes )
 
